@@ -78,15 +78,32 @@ def tk_window(balls):
                 btn.grid(row=i*3+2, column=2, columnspan=2, pady=3)
 
         # Atualiza os valores
+# Atualiza os valores
+        widget_com_foco = root.focus_get() # Pega o widget que está atualmente em foco
+
         for b in balls:
             if b.id in widgets:
                 vx, vy = b.body.velocity
+                # O label sempre atualiza, pois não é editável
                 widgets[b.id]['label']["text"] = f"Bola {b.id} | Massa: {b.mass} | Vel: ({vx:.1f},{vy:.1f})"
-                # Opcional: atualizar os campos de Entry constantemente (pode ser irritante para o usuário)
-                widgets[b.id]['vel_x'].delete(0, tk.END); widgets[b.id]['vel_x'].insert(0, f"{vx:.1f}")
-                widgets[b.id]['vel_y'].delete(0, tk.END); widgets[b.id]['vel_y'].insert(0, f"{vy:.1f}")
-                widgets[b.id]['mass'].delete(0, tk.END); widgets[b.id]['mass'].insert(0, f"{b.mass}")
 
+                # --- Lógica de atualização condicional ---
+                # SÓ atualiza o campo de Entry se ele NÃO for o que o usuário está editando
+                
+                campo_vx = widgets[b.id]['vel_x']
+                if campo_vx != widget_com_foco:
+                    campo_vx.delete(0, tk.END)
+                    campo_vx.insert(0, f"{vx:.1f}")
+
+                campo_vy = widgets[b.id]['vel_y']
+                if campo_vy != widget_com_foco:
+                    campo_vy.delete(0, tk.END)
+                    campo_vy.insert(0, f"{vy:.1f}")
+
+                campo_massa = widgets[b.id]['mass']
+                if campo_massa != widget_com_foco:
+                    campo_massa.delete(0, tk.END)
+                    campo_massa.insert(0, f"{b.mass}")
         root.after(500, update_ui)
 
     update_ui()
